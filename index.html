@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loved&Cared-707 Radar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0a0a23;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #ffd700;
+    }
+    .button {
+      background-color: #005f99;
+      border: none;
+      color: white;
+      padding: 20px;
+      margin: 10px;
+      font-size: 1.2em;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+    }
+    .button:hover::after {
+      content: attr(data-hover);
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      white-space: nowrap;
+      z-index: 999;
+    }
+    .disclaimer {
+      margin-top: 20px;
+      color: #ff6666;
+      font-size: 0.95em;
+      max-width: 85%;
+      text-align: center;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Loved&Cared-707 Radar</h1>
+
+  <button class="button" onclick="triggerAlert()" data-hover="Uh Oh. Not gut. Reach me in private messages and let me know how should I help! 💖🙏">I'm not okay</button>
+  <button class="button" data-hover="Great! I'm happy to hear that 🥹👍">I'm okay</button>
+
+  <p class="disclaimer">
+    I want your honesty — don't just say you're okay when you clearly aren't. I'm here because I care. 💛
+  </p>
+
+  <audio id="alertSound">
+    <source src="747_decompression_alert.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    function triggerAlert() {
+      const confirmed = confirm("You're about to send a 'not okay' signal. Are you sure?");
+      if (confirmed) {
+        document.getElementById("alertSound").play();
+        alert("Alert sent. Help is on the way 💜");
+
+        // Discord webhook alert
+        fetch("https://discord.com/api/webhooks/1379500106797158540/Asoyx6oTf-1rGhDv0tFqEHRdFzlwC-48G2KRcQl2SlQLKvI2F49DiA5zOY84jS6z-9s-", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            content: "🚨 Loved&Cared-707 Alert: They clicked 'I'm not okay'! Check on them, Captain 💛"
+          })
+        }).catch(err => console.error('Webhook error:', err));
+      }
+    }
+  </script>
+</body>
+</html>
