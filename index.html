@@ -1,94 +1,221 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Loved&Cared-707 Radar</title>
+
+  <title>Loved & Cared 707 💜</title>
+
+
+
+  <!-- Firebase scripts -->
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+
+
   <style>
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0a0a23;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      color: #ffd700;
-    }
-    .button {
-      background-color: #005f99;
-      border: none;
-      color: white;
-      padding: 20px;
-      margin: 10px;
-      font-size: 1.2em;
-      border-radius: 12px;
-      cursor: pointer;
-      position: relative;
-    }
-    .button:hover::after {
-      content: attr(data-hover);
-      position: absolute;
-      top: -35px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.85em;
-      white-space: nowrap;
-      z-index: 999;
-    }
-    .disclaimer {
-      margin-top: 20px;
-      color: #ff6666;
-      font-size: 0.95em;
-      max-width: 85%;
+
+      font-family: 'Segoe UI', sans-serif;
+
+      background-color: #f7f0ff;
+
       text-align: center;
+
+      padding: 50px;
+
     }
-    audio {
-      display: none;
+
+    button {
+
+      font-size: 1.2em;
+
+      margin: 20px;
+
+      padding: 15px 30px;
+
+      background-color: #8b5cf6;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 10px;
+
+      cursor: pointer;
+
     }
+
+    button:hover {
+
+      background-color: #6d28d9;
+
+    }
+
   </style>
+
 </head>
+
 <body>
-  <h1>Loved&Cared-707 Radar</h1>
 
-  <button class="button" onclick="triggerAlert()" data-hover="Uh Oh. Not gut. Reach me in private messages and let me know how should I help! 💖🙏">I'm not okay</button>
-  <button class="button" data-hover="Great! I'm happy to hear that 🥹👍">I'm okay</button>
+  <h1>💛 Welcome to Loved & Cared 707 💛</h1>
 
-  <p class="disclaimer">
-    I want your honesty — don't just say you're okay when you clearly aren't. I'm here because I care. 💛
-  </p>
+  <p>We're here for each other. Click if you're okay, or not okay.</p>
 
-  <audio id="alertSound">
-    <source src="747_decompression_alert.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+
+
+  <button onclick="triggerAlert()">I'm Not Okay 🚨</button>
+
+  <button onclick="okayPopup()">I'm Okay 💜</button>
+
+
+
+  <audio id="alertSound" src="alert.mp3" preload="auto"></audio>
+
+
 
   <script>
-    function triggerAlert() {
-      const confirmed = confirm("You're about to send a 'not okay' signal. Are you sure?");
-      if (confirmed) {
-        document.getElementById("alertSound").play();
-        alert("Alert sent. Help is on the way 💜");
 
-        // Discord webhook alert
-        fetch("https://discord.com/api/webhooks/1379500106797158540/Asoyx6oTf-1rGhDv0tFqEHRdFzlwC-48G2KRcQl2SlQLKvI2F49DiA5zOY84jS6z-9s-", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            content: "🚨 Loved&Cared-707 Alert: They clicked 'I'm not okay'! Check on them, Captain 💛"
-          })
-        }).catch(err => console.error('Webhook error:', err));
-      }
+    // === Replace this config with your actual Firebase config ===
+
+    const firebaseConfig = {
+
+      apiKey: "AIzaSyBna3N9hCMNuhuEMYEREW580JWh-5TlZxI",
+
+      authDomain: "loved-707-status-224bb.firebaseapp.com",
+
+      databaseURL: "https://loved-707-status-224bb-default-rtdb.firebaseio.com/",
+
+      projectId: "loved-707-status-224bb",
+
+      storageBucket: "loved-707-status-224bb.firebasestorage.app",
+
+      messagingSenderId: "724722544661",
+
+      appId: "1:724722544661:web:c70858184b0a9aef34de1c"
+
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+
+
+    // === Prompt for username & log it ===
+
+    let visitorUsername = prompt("What's your username?");
+
+    if (!visitorUsername) visitorUsername = "Anonymous-" + Date.now();
+
+
+
+    const db = firebase.database();
+
+    const userRef = db.ref('visitors/' + visitorUsername);
+
+    userRef.set({
+
+      time: new Date().toISOString(),
+
+      status: "online"
+
+    });
+
+
+
+    // === Discord webhook URL ===
+
+    const discordWebhook = "YOUR_WEBHOOK_URL"; // 🔔 Replace with your actual webhook
+
+
+
+    function triggerAlert() {
+
+      const confirmed = confirm("You're about to send a 'not okay' signal. Are you sure?");
+
+      if (!confirmed) return;
+
+
+
+      // Sound for everyone
+
+      const alertAudio = document.getElementById("alertSound");
+
+      if (alertAudio) alertAudio.play();
+
+
+
+      // Alert in browser
+
+      alert("Alert sent. Help is on the way 💜");
+
+
+
+      // Send to Discord and ping you
+
+      fetch(discordWebhook, {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+          content: <@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them 💛
+
+        })
+
+      });
+
+
+
+      // Log alert to Firebase
+
+      db.ref("alerts/" + Date.now()).set({
+
+        user: visitorUsername,
+
+        time: new Date().toISOString(),
+
+        type: "not_okay"
+
+      });
+
     }
+
+
+
+    function okayPopup() {
+
+      alert("Awesome 💞 One 'I'm okay' a day keeps the stress away!");
+
+
+
+      // Log to Firebase
+
+      db.ref("okayLogs/" + Date.now()).set({
+
+        user: visitorUsername,
+
+        time: new Date().toISOString(),
+
+        type: "okay"
+
+      });
+
+    }
+
   </script>
+
 </body>
+
 </html>
