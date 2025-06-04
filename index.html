@@ -1,221 +1,104 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8" />
-
   <title>Loved & Cared 707 💜</title>
-
-
-
-  <!-- Firebase scripts -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-
-
   <style>
-
     body {
-
       font-family: 'Segoe UI', sans-serif;
-
       background-color: #f7f0ff;
-
       text-align: center;
-
       padding: 50px;
-
     }
-
     button {
-
       font-size: 1.2em;
-
       margin: 20px;
-
       padding: 15px 30px;
-
       background-color: #8b5cf6;
-
       color: white;
-
       border: none;
-
       border-radius: 10px;
-
       cursor: pointer;
-
     }
-
     button:hover {
-
       background-color: #6d28d9;
-
     }
-
   </style>
-
 </head>
-
 <body>
 
   <h1>💛 Welcome to Loved & Cared 707 💛</h1>
-
   <p>We're here for each other. Click if you're okay, or not okay.</p>
 
-
-
   <button onclick="triggerAlert()">I'm Not Okay 🚨</button>
-
   <button onclick="okayPopup()">I'm Okay 💜</button>
-
-
 
   <audio id="alertSound" src="747_decompression_alert.mp3" preload="auto"></audio>
 
-
-
   <script>
-
-    // === Replace this config with your actual Firebase config ===
-
+    // ✅ Firebase config
     const firebaseConfig = {
-
       apiKey: "AIzaSyBna3N9hCMNuhuEMYEREW580JWh-5TlZxI",
-
       authDomain: "loved-707-status-224bb.firebaseapp.com",
-
       databaseURL: "https://loved-707-status-224bb-default-rtdb.firebaseio.com/",
-
       projectId: "loved-707-status-224bb",
-
-      storageBucket: "loved-707-status-224bb.firebasestorage.app",
-
+      storageBucket: "loved-707-status-224bb.appspot.com",
       messagingSenderId: "724722544661",
-
       appId: "1:724722544661:web:c70858184b0a9aef34de1c"
-
     };
-
     firebase.initializeApp(firebaseConfig);
 
-
-
-    // === Prompt for username & log it ===
-
+    // ✅ Prompt for username
     let visitorUsername = prompt("What's your username?");
-
     if (!visitorUsername) visitorUsername = "Anonymous-" + Date.now();
 
-
-
     const db = firebase.database();
-
     const userRef = db.ref('visitors/' + visitorUsername);
-
     userRef.set({
-
       time: new Date().toISOString(),
-
       status: "online"
-
     });
 
-
-
-    // === Discord webhook URL ===
-
-    const discordWebhook = "https://discord.com/api/webhooks/1379500106797158540/Asoyx6oTf-1rGhDv0tFqEHRdFzlwC-48G2KRcQl2SlQLKvI2F49DiA5zOY84jS6z-9s-"; // 🔔 Replace with your actual webhook
-
-
+    // ✅ Discord webhook
+    const discordWebhook = "https://discord.com/api/webhooks/1379500106797158540/Asoyx6oTf-1rGhDv0tFqEHRdFzlwC-48G2KRcQl2SlQLKvI2F49DiA5zOY84jS6z-9s-";
 
     function triggerAlert() {
-
       const confirmed = confirm("You're about to send a 'not okay' signal. Are you sure?");
-
       if (!confirmed) return;
 
-
-
-      // Sound for everyone
-
       const alertAudio = document.getElementById("alertSound");
-
       if (alertAudio) alertAudio.play();
-
-
-
-      // Alert in browser
 
       alert("Alert sent. Help is on the way 💜");
 
-
-
-      // Send to Discord and ping you
-
+      // ✅ Fix the string here!
       fetch(discordWebhook, {
-
         method: "POST",
-
         headers: {
-
           "Content-Type": "application/json"
-
         },
-
         body: JSON.stringify({
-
-          content: <@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them 💛
-
+          content: `<@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them 💛`
         })
-
       });
-
-
-
-      // Log alert to Firebase
 
       db.ref("alerts/" + Date.now()).set({
-
         user: visitorUsername,
-
         time: new Date().toISOString(),
-
         type: "not_okay"
-
       });
-
     }
-
-
 
     function okayPopup() {
-
       alert("Awesome 💞 One 'I'm okay' a day keeps the stress away!");
-
-
-
-      // Log to Firebase
-
       db.ref("okayLogs/" + Date.now()).set({
-
         user: visitorUsername,
-
         time: new Date().toISOString(),
-
         type: "okay"
-
       });
-
     }
-
   </script>
-
 </body>
-
 </html>
