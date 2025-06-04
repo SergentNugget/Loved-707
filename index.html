@@ -25,6 +25,11 @@
     button:hover {
       background-color: #6d28d9;
     }
+    .disclaimer {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -32,13 +37,15 @@
   <h1>💛 Welcome to Loved & Cared 707 💛</h1>
   <p>We're here for each other. Click if you're okay, or not okay.</p>
 
+  <!-- 🔥 Honesty disclaimer -->
+  <p class="disclaimer">❗ I want your honesty — don't click "I'm okay" when you're not.</p>
+
   <button onclick="triggerAlert()">I'm Not Okay 🚨</button>
   <button onclick="okayPopup()">I'm Okay 💜</button>
 
   <audio id="alertSound" src="747_decompression_alert.mp3" preload="auto"></audio>
 
   <script>
-    // ✅ Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBna3N9hCMNuhuEMYEREW580JWh-5TlZxI",
       authDomain: "loved-707-status-224bb.firebaseapp.com",
@@ -50,7 +57,6 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    // ✅ Prompt for username
     let visitorUsername = prompt("What's your username?");
     if (!visitorUsername) visitorUsername = "Anonymous-" + Date.now();
 
@@ -61,7 +67,6 @@
       status: "online"
     });
 
-    // ✅ Discord webhook
     const discordWebhook = "https://discord.com/api/webhooks/1379500106797158540/Asoyx6oTf-1rGhDv0tFqEHRdFzlwC-48G2KRcQl2SlQLKvI2F49DiA5zOY84jS6z-9s-";
 
     function triggerAlert() {
@@ -73,14 +78,13 @@
 
       alert("Alert sent. Help is on the way 💜");
 
-      // ✅ Fix the string here!
       fetch(discordWebhook, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          content: `<@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them 💛`
+          content: `<@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them, Captain 💛`
         })
       });
 
