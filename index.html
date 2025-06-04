@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Loved & Cared 707 💜</title>
+
+  <!-- Firebase scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,6 +16,17 @@
       text-align: center;
       padding: 50px;
     }
+
+    h1 {
+      color: #6b21a8;
+    }
+
+    .disclaimer {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
     button {
       font-size: 1.2em;
       margin: 20px;
@@ -22,28 +37,52 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #6d28d9;
     }
-    .disclaimer {
-      color: red;
-      font-weight: bold;
-      margin-bottom: 20px;
+
+    table {
+      margin-top: 40px;
+      margin-left: auto;
+      margin-right: auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #e9d5ff;
     }
   </style>
 </head>
+
 <body>
-
   <h1>💛 Welcome to Loved & Cared 707 💛</h1>
+  <p class="disclaimer">❗I want your honesty, don't click "I'm okay" when you are not.</p>
   <p>We're here for each other. Click if you're okay, or not okay.</p>
-
-  <!-- 🔥 Honesty disclaimer -->
-  <p class="disclaimer">❗ I want your honesty — don't click "I'm okay" when you're not.</p>
 
   <button onclick="triggerAlert()">I'm Not Okay 🚨</button>
   <button onclick="okayPopup()">I'm Okay 💜</button>
 
+  <!-- Sounds -->
   <audio id="alertSound" src="747_decompression_alert.mp3" preload="auto"></audio>
+  <audio id="okaySound" src="airbus_disconnect.mp3" preload="auto"></audio>
+
+  <h2>🧾 Mood Click Leaderboard</h2>
+  <table id="leaderboard">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>I'm Okay ✅</th>
+        <th>Not Okay 🚨</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
     const firebaseConfig = {
@@ -80,29 +119,56 @@
 
       fetch(discordWebhook, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: `<@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them, Captain 💛`
+          content: `<@941334743163764787> 🚨 Loved&Cared-707 Alert: **${visitorUsername}** clicked "I'm not okay"! Please check on them 💛`
         })
       });
 
-      db.ref("alerts/" + Date.now()).set({
-        user: visitorUsername,
-        time: new Date().toISOString(),
-        type: "not_okay"
-      });
+      const ref = db.ref("alerts/" + Date.now());
+      ref.set({ user: visitorUsername, time: new Date().toISOString(), type: "not_okay" });
+
+      db.ref("leaderboard/" + visitorUsername + "/notOkay").transaction(n => (n || 0) + 1);
     }
 
     function okayPopup() {
+      const okayAudio = document.getElementById("okaySound");
+      if (okayAudio) okayAudio.play();
+
       alert("Awesome 💞 One 'I'm okay' a day keeps the stress away!");
+
+      fetch(discordWebhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `✈️ Skies clear Captain! **${visitorUsername}** is Fine 💖🥹👍`
+        })
+      });
+
       db.ref("okayLogs/" + Date.now()).set({
         user: visitorUsername,
         time: new Date().toISOString(),
         type: "okay"
       });
+
+      db.ref("leaderboard/" + visitorUsername + "/okay").transaction(n => (n || 0) + 1);
     }
+
+    // Load Leaderboard
+    const leaderboardRef = db.ref("leaderboard");
+    leaderboardRef.on("value", snapshot => {
+      const data = snapshot.val();
+      const tbody = document.querySelector("#leaderboard tbody");
+      tbody.innerHTML = "";
+      if (data) {
+        Object.entries(data).forEach(([user, scores]) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${user}</td><td>${scores.okay || 0}</td><td>${scores.notOkay || 0}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    });
   </script>
 </body>
+
 </html>
